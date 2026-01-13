@@ -32,7 +32,7 @@ export const getUser = async (req, res) => {
 
 export const changePassword = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const { userId } = req.body.user;
 
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
