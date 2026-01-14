@@ -95,7 +95,7 @@ const addMoneyToAccount = async(req,res)=>{
             status:"success",
             message:"operation completed successfully",
             data:accountInfo,
-        })
+        }) 
     } catch (error) {
         console.log(error);
         res.status(500).json({status:"failed",message:error.message})

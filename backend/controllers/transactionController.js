@@ -111,7 +111,7 @@ const getDashboardInformation = async (req,res)=>{
             totalExpense,
             chartData:data,
             lastTransactions,
-            lastAccount,
+            lastAccount, 
         })
     } catch (error) {
         console.log(error)

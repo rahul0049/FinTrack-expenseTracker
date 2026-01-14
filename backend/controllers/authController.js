@@ -11,7 +11,7 @@ const signupUser = async (req, res) => {
         }
         const userExist = await pool.query({
             text: "SELECT EXISTS (SELECT * FROM tbluser WHERE email=$1)",
-            values: [email],
+            values: [email], 
         })
         if (userExist.rows[0].exists ) {
             return res.status(409).json({

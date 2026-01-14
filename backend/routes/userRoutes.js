@@ -6,4 +6,4 @@ router.get("/",authMiddleware,getUser);
 router.put("/change-password",authMiddleware,changePassword);
 router.put("/",authMiddleware,updateUser);
 
-export default router
+export default router 

@@ -4,7 +4,7 @@ import { comparePassword, hashPassword } from "../libs/index.js";
 export const getUser = async (req, res) => {
   try {
     const { userId } = req.user;
-
+ 
     const userExist = await pool.query({
       text: `SELECT * FROM tbluser WHERE id = $1`,
       values: [userId],

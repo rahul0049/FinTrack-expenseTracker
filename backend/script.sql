@@ -14,6 +14,7 @@ CREATE TABLE tbluser (
 );
 
 
+
 CREATE TABLE tblaccount (
 	id SERIAL NOT NULL PRIMARY KEY,
 	user_id INTEGER NOT NULL REFERENCES tbluser(id),
