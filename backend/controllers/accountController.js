@@ -1,4 +1,4 @@
-import { pool } from "../libs/database";
+import { pool } from "../libs/database.js";
 
 const getAccounts = async (req,res)=>{
     try {
@@ -84,9 +84,9 @@ const addMoneyToAccount = async(req,res)=>{
             values:[newAmount,id]
         });
         const accountInfo = result.rows[0];
-        const description = accountInformation.account_name + " (Deposit)";
+        const description = accountInfo.account_name + " (Deposit)";
         const transQuery={
-            text:`INSERT INTO tbltransaction {user_id,description,type,status,amount,source} 
+            text:`INSERT INTO tbltransaction (user_id,description,type,status,amount,source) 
             VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
             values:[userId,description,"income","completed",amount,accountInfo.account_name]
         }
