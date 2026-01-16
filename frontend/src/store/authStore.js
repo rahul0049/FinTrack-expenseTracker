@@ -41,6 +41,42 @@ const useAuthStore = create((set) => ({
       token: null,
     });
   },
+
+  changePassword: async (data) => {
+    try {
+      set({ loading: true, error: null });
+      const res = await api.put("/user/change-password", data);
+      set({ loading: false });
+      return res.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || "Password change failed",
+        loading: false,
+      });
+      throw error;
+    }
+  },
+
+  updateUser: async (data) => {
+    try {
+      set({ loading: true, error: null });
+      const res = await api.put("/user", data);
+
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      set({
+        user: res.data.user,
+        loading: false,
+      });
+      return res.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || "Update profile failed",
+        loading: false,
+      });
+      throw error;
+    }
+  },
 }));
 
 export default useAuthStore;

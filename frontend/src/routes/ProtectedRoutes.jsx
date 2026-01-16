@@ -1,6 +1,6 @@
 import { Children } from 'react';
 import {Navigate} from 'react-router-dom'
-import useAuthStore from '../store/authStore.jsx';
+import useAuthStore from '../store/authStore.js';
 const ProtectedRoute = ({children})=>{
     const token = useAuthStore((state)=>state.token);
     if (!token) {

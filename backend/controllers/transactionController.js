@@ -32,31 +32,31 @@ const getTransactions = async (req, res) => {
 };
 
 
-const getDashboardInformation = async (req,res)=>{
-    try {
-        const {userId} = req.user
-        let totalIncome = 0;
-        let totalExpense = 0;
-        const transactionsResults = await pool.query({
-            text:`SELECT type, SUM(amount) AS totalAmount
+const getDashboardInformation = async (req, res) => {
+  try {
+    const { userId } = req.user
+    let totalIncome = 0;
+    let totalExpense = 0;
+    const transactionsResults = await pool.query({
+      text: `SELECT type, SUM(amount) AS totalAmount
              From tbltransaction 
              WHERE user_id =$1 
              GROUP BY type`,
-            values:[userId]
-        });
-        const transactions=transactionsResults.rows;
-        transactions.forEach((transaction)=>{
-            if(transaction.type==="income") totalIncome+=transaction.totalamount;
-            else totalExpense+=transaction.totalamount
-        });
-        const availableBalance = totalIncome-totalExpense;
+      values: [userId]
+    });
+    const transactions = transactionsResults.rows;
+    transactions.forEach((transaction) => {
+      if (transaction.type === "income") totalIncome += transaction.totalamount;
+      else totalExpense += transaction.totalamount
+    });
+    const availableBalance = totalIncome - totalExpense;
 
-        //aggregate transactions to sum by type and group by month
-        const year = new Date().getFullYear();
-        const start_Date = new Date(year,0,1);
-        const end_Date = new Date(year,11,31,23,59,59);
-        const result = await pool.query({
-            text:`
+    //aggregate transactions to sum by type and group by month
+    const year = new Date().getFullYear();
+    const start_Date = new Date(year, 0, 1);
+    const end_Date = new Date(year, 11, 31, 23, 59, 59);
+    const result = await pool.query({
+      text: `
             SELECT
               EXTRACT(MONTH FROM createdat) AS month,
               type,
@@ -70,53 +70,54 @@ const getDashboardInformation = async (req,res)=>{
               EXTRACT (YEAR FROM createdat),
               EXTRACT (MONTH FROM createdat)
               ,type`,
-            values:[userId,start_Date,end_Date]
-        });
+      values: [userId, start_Date, end_Date]
+    });
 
-        const data =[];
-        for(let i=0;i<12;i++){
-            let income = 0;
-            let expense = 0;
-            for(const row of result.rows){
-                if(Number(row.month)===i+1){
-                    if(row.type==="income") income = Number(row.totalamount);
-                    else if(row.type === "expense") expense = Number(row.totalamount);
-                }
-            }
-            data.push({
-                label:getMonths(i),
-                income,
-                expense
-            })
+    const data = [];
+    for (let i = 0; i < 12; i++) {
+      let income = 0;
+      let expense = 0;
+      for (const row of result.rows) {
+        if (Number(row.month) === i + 1) {
+          if (row.type === "income") income = Number(row.totalamount);
+          else if (row.type === "expense") expense = Number(row.totalamount);
         }
-        
-        const lastTransactionsResult = await pool.query({
-            text:`SELECT * FROM tbltransaction WHERE user_id=$1 ORDER BY id DESC LIMIT 5`,
-            values:[userId]
-        });
-        const lastTransactions = lastTransactionsResult.rows;
+      }
+      data.push({
+        label: getMonths(i),
+        income,
+        expense
+      })
+    }
 
-        const lastAccountResults = await pool.query({
-            text:`SELECT * FROM tblaccount
+    const lastTransactionsResult = await pool.query({
+      text: `SELECT * FROM tbltransaction WHERE user_id=$1 ORDER BY id DESC LIMIT 5`,
+      values: [userId]
+    });
+    const lastTransactions = lastTransactionsResult.rows;
+
+    const lastAccountResults = await pool.query({
+      text: `SELECT * FROM tblaccount
              WHERE user_id =$1
               ORDER BY id
                DESC LIMIT 4`,
-            values:[userId]
-        })
-        const lastAccount = lastAccountResults.rows;
-        res.status(200).json({
-            status:"success",
-            availableBalance,
-            totalIncome,
-            totalExpense,
-            chartData:data,
-            lastTransactions,
-            lastAccount, 
-        })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({status:"failed",message:error.message})
-    }
+      values: [userId]
+    })
+    const lastAccount = lastAccountResults.rows;
+    res.set("Cache-Control", "no-store");
+    res.status(200).json({
+      status: "success",
+      availableBalance,
+      totalIncome,
+      totalExpense,
+      chartData: data,
+      lastTransactions,
+      lastAccounts: lastAccount,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ status: "failed", message: error.message })
+  }
 }
 
 
@@ -251,4 +252,4 @@ const transferMoneyToAccount = async (req, res) => {
   }
 };
 
-export { getTransactions, addTransaction, transferMoneyToAccount,getDashboardInformation };
+export { getTransactions, addTransaction, transferMoneyToAccount, getDashboardInformation };

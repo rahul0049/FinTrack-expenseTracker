@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import useAuthStore from "../store/authStore.jsx";
+import useAuthStore from "../store/authStore.js";
 const PublicRoute = ({ children }) => {
   const token = useAuthStore((state)=>state.token)
 
