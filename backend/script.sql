@@ -7,7 +7,8 @@ CREATE TABLE tbluser (
 	accounts TEXT[],
 	password TEXT,
 	provider VARCHAR(10) NULL,
-	country TEXT,
+	country T
+	EXT,
 	currency VARCHAR(5) NOT NULL DEFAULT 'USD',
 	createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
